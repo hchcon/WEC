@@ -1,0 +1,14 @@
+# Unreal Engine 默认忽略规则
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+Windows/
+.vs/
+.vscode/
+*.sln
+*.suo
+*.log
+*.aps
+*.user
