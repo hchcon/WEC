@@ -37,4 +37,5 @@ private:
     FCriticalSection BufferMutex;           // 缓冲区互斥锁
     FThreadSafeBool bRunning;               // 线程运行标志
     TUniquePtr<FRunnableThread> Thread;     // 线程对象
+    TArray<uint8> LastBuffer;
 };

@@ -20,9 +20,40 @@ public:
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> VRCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    float RotateThreshold; // 旋转阈值
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    float RotatingTime; // 旋转时间
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    bool ShouldRotate; // 是否应该旋转
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    FRotator VRCameraRotation; // VR 摄像头的旋转角度
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    FRotator PlatformRotation; // 平台的旋转角度
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    float TargetX; // 目标 X 轴旋转角度
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    float TargetY; // 目标 Y 轴旋转角度
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    float TargetZ; // 目标 Z 轴旋转角度
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+    float ErrorTolerance = .5f; 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+    // 旋转逻辑
+    UFUNCTION(BlueprintCallable)
+    void RotateLogic(float AngleDifference,bool bIsX);
 
 public:	
 	// Called every frame

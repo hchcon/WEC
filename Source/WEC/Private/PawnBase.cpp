@@ -3,6 +3,9 @@
 
 #include "PawnBase.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "PlatformControlSubsystem.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -14,6 +17,15 @@ APawnBase::APawnBase()
 	VRCamera->SetupAttachment(RootComponent);
 	VRCamera->SetRelativeLocation(FVector(0, 0, 0));
 	VRCamera->bUsePawnControlRotation = true;
+
+    RotateThreshold = 0.1f;
+    RotatingTime = 0.0f;
+    ShouldRotate = false;
+    VRCameraRotation = FRotator::ZeroRotator;
+    PlatformRotation = FRotator::ZeroRotator;
+    TargetX = 0.0f;
+    TargetY = 0.0f;
+    TargetZ = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +33,68 @@ void APawnBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void APawnBase::RotateLogic(float AngleDifference, bool bIsX)
+{
+	
+
+    // 判断是否需要旋转
+    if (AngleDifference > RotateThreshold)
+    {
+        ShouldRotate = true;
+    }
+
+    if (UKismetMathLibrary::NearlyEqual_FloatFloat(AngleDifference, 0, ErrorTolerance))
+    {
+        ShouldRotate = false;
+    }
+
+    if (ShouldRotate)
+    {
+        float deltaSeconds = 0.02f;
+        // 更新旋转时间
+        RotatingTime += deltaSeconds;
+
+
+        // 插值计算旋转角度
+        float InterpSpeed = UKismetMathLibrary::MapRangeClamped(RotatingTime,0,0.5,1,5);
+
+        if (bIsX)
+        {
+            TargetX = UKismetMathLibrary::FInterpTo(PlatformRotation.Roll,VRCameraRotation.Roll,deltaSeconds,InterpSpeed);
+        }
+        else
+        {
+            TargetY = UKismetMathLibrary::FInterpTo(PlatformRotation.Pitch,VRCameraRotation.Pitch,deltaSeconds,InterpSpeed);
+        }
+
+        
+        
+
+      
+
+        
+
+        // 发送旋转数据到外部系统
+        UPlatformControlSubsystem* PawnPlatformControlSubsystem = GetGameInstance()->GetSubsystem<UPlatformControlSubsystem>();
+        if (PawnPlatformControlSubsystem)
+        {
+            PawnPlatformControlSubsystem->Send3AxisAttitudeControl(TargetX, TargetY, TargetZ, 1, false);
+        }
+
+        // 设置平台旋转角度
+        PlatformRotation.Roll = TargetX;
+        PlatformRotation.Pitch = TargetY;
+
+        FString RotationString = FString::Printf(TEXT("Target Rotation: X=%.2f, Y=%.2f, Z=%.2f"), TargetX, TargetY, TargetZ);
+        UKismetSystemLibrary::PrintString(this, RotationString, true, true, FLinearColor::Yellow, 2.0f);
+    }
+    else
+    {
+        // 重置旋转时间
+        RotatingTime = 0.0f;
+    }
 }
 
 // Called every frame

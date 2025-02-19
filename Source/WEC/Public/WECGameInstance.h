@@ -13,5 +13,11 @@ UCLASS()
 class WEC_API UWECGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+
+
+
+public:
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	float RotateThreshold = 2.f;
 	
 };

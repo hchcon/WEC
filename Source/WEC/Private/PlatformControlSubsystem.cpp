@@ -206,7 +206,8 @@ void UPlatformControlSubsystem::RunSendThread()
 {
     if (UDPSender)
     {
-    UDPSender->Start(SendInterval);
+        bRunning = true;
+        UDPSender->Start(SendInterval);
     }
 }
 
@@ -214,6 +215,8 @@ void UPlatformControlSubsystem::StopSendThread()
 {
     if (UDPSender)
     {
+        bRunning = false;
         UDPSender->Stop();
+        
     }
 }

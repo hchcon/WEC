@@ -47,6 +47,9 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	float SendInterval = 0.01f;  
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	bool bRunning = false;
+
 protected:
 		virtual	void Initialize(FSubsystemCollectionBase& Collection) override;
 		virtual void Deinitialize() override;

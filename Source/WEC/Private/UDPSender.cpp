@@ -73,21 +73,27 @@ uint32 FUDPSender::Run()
         // 精确等待10ms
         if (DeltaTime >= SendInterval)
         {
-            // 发送数据
-            TArray<uint8> LocalBuffer;
-            {
-                FScopeLock Lock(&BufferMutex);
-                LocalBuffer = SendBuffer;
-            }
-
-            if (LocalBuffer.Num() > 0 && Socket && Socket->GetSocketType() == SOCKTYPE_Datagram)
-            {
-                int32 BytesSent = 0;
-                if (!Socket->SendTo(LocalBuffer.GetData(), LocalBuffer.Num(), BytesSent, *RemoteAddr))
+            if (SendBuffer != LastBuffer)
+            {            
+                // 发送数据
+                TArray<uint8> LocalBuffer;
                 {
-                    UE_LOG(LogTemp, Error, TEXT("Data send Failed!"));
-                } ;
-                UE_LOG(LogTemp, Log, TEXT("Data send successfully!"));
+                    FScopeLock Lock(&BufferMutex);
+                    LocalBuffer = SendBuffer;
+                    LastBuffer = LocalBuffer;
+                }
+           
+           
+                if (LocalBuffer.Num() > 0 && Socket && Socket->GetSocketType() == SOCKTYPE_Datagram)
+                {
+                    int32 BytesSent = 0;
+                    if (!Socket->SendTo(LocalBuffer.GetData(), LocalBuffer.Num(), BytesSent, *RemoteAddr))
+                    {
+                        UE_LOG(LogTemp, Error, TEXT("Data send Failed!"));
+                    } ;
+                    UE_LOG(LogTemp, Log, TEXT("Data send successfully!"));
+                }
+           
             }
 
             LastSendTime = CurrentTime;
