@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "PawnBase.generated.h"
 
+class UCameraComponent;
+
 UCLASS()
 class WEC_API APawnBase : public APawn
 {
@@ -14,6 +16,9 @@ class WEC_API APawnBase : public APawn
 public:
 	// Sets default values for this pawn's properties
 	APawnBase();
+
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCameraComponent> VRCamera;
 
 protected:
 	// Called when the game starts or when spawned
