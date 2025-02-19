@@ -27,6 +27,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool Send3AxisAttitudeControl(float XRot, float YRot, float ZHeight, uint8 SpeedLevel = 1,bool Send = false);
 
+	//ตุฬจน้มใ
 	UFUNCTION(BlueprintCallable)
 	bool SendPlatformReset();
 
