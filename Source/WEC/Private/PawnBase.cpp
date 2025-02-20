@@ -20,7 +20,8 @@ APawnBase::APawnBase()
 
     RotateThreshold = 0.1f;
     RotatingTime = 0.0f;
-    ShouldRotate = false;
+    ShouldRotateX = false;
+    ShouldRotateY = false;
     VRCameraRotation = FRotator::ZeroRotator;
     PlatformRotation = FRotator::ZeroRotator;
     TargetX = 0.0f;
@@ -37,20 +38,37 @@ void APawnBase::BeginPlay()
 
 void APawnBase::RotateLogic(float AngleDifference, bool bIsX)
 {
-	
-
-    // 判断是否需要旋转
+	// 判断是否需要旋转
     if (AngleDifference > RotateThreshold)
     {
-        ShouldRotate = true;
+        if (bIsX)
+        {
+            ShouldRotateX = true;
+        }
+        else
+        {
+            ShouldRotateY = true;
+        }
+        
+        
     }
 
     if (UKismetMathLibrary::NearlyEqual_FloatFloat(AngleDifference, 0, ErrorTolerance))
     {
-        ShouldRotate = false;
+		// FString AD  = FString::Printf(TEXT("%.2f"),AngleDifference);
+		// UKismetSystemLibrary::PrintString(this, AD, true, true, FLinearColor::Red, 2.0f);
+        if (bIsX)
+        {
+            ShouldRotateX = false;
+        }
+        else
+        {
+            ShouldRotateY = false;
+        }
+
     }
 
-    if (ShouldRotate)
+	if (bIsX ? ShouldRotateX : ShouldRotateY)
     {
         float deltaSeconds = 0.02f;
         // 更新旋转时间
@@ -69,11 +87,7 @@ void APawnBase::RotateLogic(float AngleDifference, bool bIsX)
             TargetY = UKismetMathLibrary::FInterpTo(PlatformRotation.Pitch,VRCameraRotation.Pitch,deltaSeconds,InterpSpeed);
         }
 
-        
-        
-
-      
-
+       
         
 
         // 发送旋转数据到外部系统
@@ -88,7 +102,7 @@ void APawnBase::RotateLogic(float AngleDifference, bool bIsX)
         PlatformRotation.Pitch = TargetY;
 
         FString RotationString = FString::Printf(TEXT("Target Rotation: X=%.2f, Y=%.2f, Z=%.2f"), TargetX, TargetY, TargetZ);
-        UKismetSystemLibrary::PrintString(this, RotationString, true, true, FLinearColor::Yellow, 2.0f);
+        UKismetSystemLibrary::PrintString(this, RotationString, true, true, FLinearColor::Yellow, 1.0f);
     }
     else
     {

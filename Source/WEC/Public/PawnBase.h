@@ -27,10 +27,16 @@ public:
     float RotatingTime; // 旋转时间
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
-    bool ShouldRotate; // 是否应该旋转
+    bool ShouldRotateX; // 是否应该旋转X
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+	bool ShouldRotateY; // 是否应该旋转Y
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
     FRotator VRCameraRotation; // VR 摄像头的旋转角度
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
+	FVector VRCameraLocation; // VR 摄像头的位置
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation")
     FRotator PlatformRotation; // 平台的旋转角度

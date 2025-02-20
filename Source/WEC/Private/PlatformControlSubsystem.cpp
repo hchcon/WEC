@@ -76,16 +76,27 @@ void UPlatformControlSubsystem::CloseUDPSocket()
 
 bool UPlatformControlSubsystem::RestartUDPSocket()
 {
-
-    if (UDPSender)
-    {
-        UDPSender->ResetRemoteAddr(*RemoteAddr);
-    }
-	 // 先关闭现有的Socket（如果存在）
+     // 先关闭现有的Socket（如果存在）
     CloseUDPSocket();
 
-    // 重新启动Socket
-    return StartUDPSocket();
+     // 重新启动Socket
+    
+    
+    if (StartUDPSocket() && UDPSender)
+    {
+        UDPSender->ResetRemoteAddr(UDPSocket,*RemoteAddr);
+        if (bRunning)
+        {
+            UDPSender->Start(SendInterval);
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+	
+    
 }
 
 bool UPlatformControlSubsystem::Send3AxisAttitudeControl(float XRot, float YRot, float ZHeight, uint8 SpeedLevel,bool Send)
@@ -204,6 +215,7 @@ bool UPlatformControlSubsystem::SendPlatformReset()
 
 void UPlatformControlSubsystem::RunSendThread()
 {
+
     if (UDPSender)
     {
         bRunning = true;

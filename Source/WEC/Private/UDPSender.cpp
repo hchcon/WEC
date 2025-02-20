@@ -48,15 +48,18 @@ void FUDPSender::SetSendData(const TArray<uint8>& Data)
     SendBuffer = Data;
 }
 
-void FUDPSender::ResetRemoteAddr(const FInternetAddr& InRemoteAddr)
+void FUDPSender::ResetRemoteAddr(FSocket* InSocket,const FInternetAddr& InRemoteAddr)
 {
+    //FScopeLock SocketLock(&SocketMutex);
     Stop();
-    uint32 OutIP;
-    uint16 OutPort;
-    InRemoteAddr.GetIp(OutIP);
-    OutPort = InRemoteAddr.GetPort();
-    RemoteAddr->SetIp(OutIP);
-    RemoteAddr->SetPort(OutPort);
+    Socket = InSocket;
+	uint32 OutIP;
+	uint16 OutPort;
+	InRemoteAddr.GetIp(OutIP);
+	OutPort = InRemoteAddr.GetPort();
+	RemoteAddr->SetIp(OutIP);
+	RemoteAddr->SetPort(OutPort);
+	
 }
 
 
@@ -91,7 +94,9 @@ uint32 FUDPSender::Run()
                     {
                         UE_LOG(LogTemp, Error, TEXT("Data send Failed!"));
                     } ;
-                    UE_LOG(LogTemp, Log, TEXT("Data send successfully!"));
+                   uint32 OutIP;
+                   RemoteAddr->GetIp(OutIP);
+                    UE_LOG(LogTemp, Log, TEXT("Data send successfully!IP=%u"),OutIP);
                 }
            
             }

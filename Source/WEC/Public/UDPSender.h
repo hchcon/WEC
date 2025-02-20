@@ -20,7 +20,7 @@ public:
     // 设置要发送的数据（线程安全）
     void SetSendData(const TArray<uint8>& Data);
 
-    void ResetRemoteAddr(const FInternetAddr& InRemoteAddr);
+    void ResetRemoteAddr(FSocket* InSocket,const FInternetAddr& InRemoteAddr);
 
 protected:
     // FRunnable 接口实现
@@ -38,4 +38,5 @@ private:
     FThreadSafeBool bRunning;               // 线程运行标志
     TUniquePtr<FRunnableThread> Thread;     // 线程对象
     TArray<uint8> LastBuffer;
+    //FCriticalSection SocketMutex;           // 用于保护 Socket 的互斥锁
 };
