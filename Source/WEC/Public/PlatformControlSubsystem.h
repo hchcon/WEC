@@ -50,6 +50,18 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	bool bRunning = false;
 
+	// 是否反转Roll（XRot）符号
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Axis Configuration")
+    bool bInvertRoll = false;
+
+    // 是否反转Pitch（YRot）符号
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Axis Configuration")
+    bool bInvertPitch = false;
+
+    // 是否交换Roll（XRot）和Pitch（YRot）的轴向映射
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Axis Configuration")
+    bool bSwapAxes = false;
+
 protected:
 		virtual	void Initialize(FSubsystemCollectionBase& Collection) override;
 		virtual void Deinitialize() override;

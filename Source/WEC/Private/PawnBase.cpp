@@ -4,7 +4,7 @@
 #include "PawnBase.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
+//#include "Kismet/KismetSystemLibrary.h"
 #include "PlatformControlSubsystem.h"
 
 // Sets default values
@@ -101,8 +101,8 @@ void APawnBase::RotateLogic(float AngleDifference, bool bIsX)
         PlatformRotation.Roll = TargetX;
         PlatformRotation.Pitch = TargetY;
 
-        FString RotationString = FString::Printf(TEXT("Target Rotation: X=%.2f, Y=%.2f, Z=%.2f"), TargetX, TargetY, TargetZ);
-        UKismetSystemLibrary::PrintString(this, RotationString, true, true, FLinearColor::Yellow, 1.0f);
+        //FString RotationString = FString::Printf(TEXT("Target Rotation: X=%.2f, Y=%.2f, Z=%.2f"), TargetX, TargetY, TargetZ);
+        //UKismetSystemLibrary::PrintString(this, RotationString, true, true, FLinearColor::Yellow, 1.0f);
     }
     else
     {

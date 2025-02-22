@@ -3,6 +3,7 @@
 
 #include "PlatformControlSubsystem.h"
 #include "Sockets.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "SocketSubsystem.h"
 
 
@@ -101,14 +102,16 @@ bool UPlatformControlSubsystem::RestartUDPSocket()
 
 bool UPlatformControlSubsystem::Send3AxisAttitudeControl(float XRot, float YRot, float ZHeight, uint8 SpeedLevel,bool Send)
 {
-	    if (!UDPSocket || !RemoteAddr.IsValid()) {
+	if (!UDPSocket || !RemoteAddr.IsValid()) {
         UE_LOG(PlatformControlSubsystem, Error, TEXT("UDP Socket is not initialized!"));
         return false;
     }
+   
 
-    // 构造数据包（十七字节协议）
-    TArray<uint8> Packet;
-    Packet.SetNumUninitialized(17);
+
+    // 复用预分配的数据包缓冲区（避免重复内存分配）
+    static TArray<uint8> Packet;
+    Packet.SetNumUninitialized(17); // 仅在首次或大小变化时分配
 
     // 帧头（0xA5）
     Packet[0] = 0xA5;
@@ -124,15 +127,27 @@ bool UPlatformControlSubsystem::Send3AxisAttitudeControl(float XRot, float YRot,
             Packet[StartIndex + i] = Bytes[i];
         }
     };
+    
+    float AdjustedXRot= 0,AdjustedYRot = 0;
+   
+
+    if (bSwapAxes) {
+        AdjustedXRot = bInvertRoll ? XRot : -XRot; // 用户选择不交换轴向
+        AdjustedYRot = bInvertPitch ? YRot : -YRot; // 用户选择不交换轴向
+    } else {
+        AdjustedXRot = bInvertRoll ? YRot : -YRot; // 默认用户选择交换轴向,翻转符号
+        AdjustedYRot = bInvertPitch ? XRot : -XRot; // 用户选择交换轴向
+    }
+
 
     // Z轴高度（DATA0-DATA3）
     FillFloatToBytes(ZHeight, 2);
 
     // X轴旋转角度（A轴，DATA4-DATA7）
-    FillFloatToBytes(XRot, 6);
+    FillFloatToBytes(AdjustedXRot, 6);
 
     // Y轴旋转角度（B轴，DATA8-DATA11）
-    FillFloatToBytes(YRot, 10);
+    FillFloatToBytes(AdjustedYRot, 10);
 
     // 速度等级（BYTE14）
     Packet[14] = SpeedLevel;
@@ -158,11 +173,12 @@ bool UPlatformControlSubsystem::Send3AxisAttitudeControl(float XRot, float YRot,
             return false;
         }
         UE_LOG(PlatformControlSubsystem, Log, TEXT("Data send successfully!"));
+       
         return true;
     }
 
-    UDPSender->SetSendData(Packet);
-  
+    UDPSender->SetSendData(Packet);FString RotationString = FString::Printf(TEXT("Target Rotation: X=%.2f, Y=%.2f"), AdjustedXRot, AdjustedYRot);
+    UKismetSystemLibrary::PrintString(this, RotationString, true, true, FLinearColor::Yellow, 1.0f);
     UE_LOG(PlatformControlSubsystem, Log, TEXT("Data set successfully!"));
     return true;
 }
